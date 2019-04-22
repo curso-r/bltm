@@ -1,0 +1,18 @@
+Package: ltm
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Julio",
+           family = "Trecenti",
+           role = c("aut", "cre"),
+           email = "julio.trecenti@gmail.com")
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: es
+LazyData: true
+Imports: 
+    mvtnorm,
+    magrittr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
