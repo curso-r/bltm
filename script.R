@@ -1,47 +1,15 @@
----
-output: github_document
----
+## Load packages ---------------------------------------------------------------
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
-
-# ltm
-
-The goal of ltm is to fit Bayesian Latent Threshold Models using R. The model in the AR(1) form is defined by these equations:
-
-$$
-\begin{aligned}
-y_{it} &= \sum_{j=1}^J x_{ijt} b_{ijt} + \varepsilon_{it} \\
-b_{ijt} &= \beta_{ijt} \,\mathbb I(|\beta_{ijt}| \geq d_{ij}) \\
-\beta_{ij,t+1} &= \mu_{ij} + \phi_{ij}(\beta_{ijt}-\mu_{ij}) + \eta_{ijt}
-\end{aligned}
-$$
-
-for $i \in 1,\dots, I$, $j \in 1,\dots, J$ and $t \in 1,\dots, T$. These models can be fit separatedly for each $i$. The example below fits the model to one single series ($I=1$).
-
-## Load packages
-
-```{r}
 library(tidyverse)
 devtools::load_all()
-```
 
-## Simulated Example
+## Simulated Example -----------------------------------------------------------
 
-```{r example, fig.height=5, fig.width=7}
 set.seed(103)
 
 d_sim <- ltm_sim(
-  ns = 500, nk = 2, 
-  vmu = matrix(c(.5,.5), nrow = 2), 
+  ns = 500, nk = 2,
+  vmu = matrix(c(.5,.5), nrow = 2),
   mPhi = diag(2) * c(.99, .99),
   mSigs = c(.1,.1),
   dsig = .15,
@@ -53,7 +21,7 @@ d_sim$mx <- cbind(d_sim$mx, runif(500)-.5)
 d_sim$mb <- cbind(d_sim$mb, 0)
 
 p_sim <- d_sim$mb %>%
-  as.data.frame() %>% 
+  as.data.frame() %>%
   as_tibble() %>%
   set_names(paste0("beta", 1:(ncol(.)))) %>%
   rowid_to_column() %>%
@@ -65,56 +33,45 @@ p_sim <- d_sim$mb %>%
   ggtitle("Simulated")
 
 p_sim
-```
 
-```{r eval=FALSE}
 result <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 2000, iter = 8000, K = 3)
 # readr::write_rds(result, "data-raw/result.rds", compress = "xz")
-```
 
-## Results
+## Results ---------------------------------------------------------------------
 
-Results after 2000 burnin and 8000 iterations.
+# Results after 2000 burnin and 8000 iterations.
 
-```{r}
 result <- read_rds("data-raw/result.rds")
-```
 
-### Summary statistics
+### Summary statistics ---------------------------------------------------------
 
-(like Table 1 in the paper)
+# (like Table 1 in the paper)
 
-```{r}
 summary_fun <- function(.x) {
   v1 <- map_dbl(.x, first)
   q <- quantile(v1, c(.05, .95))
   tibble(mean = mean(v1), sd = sd(v1), q05 = q[1], q95 = q[2])
 }
 
-summary_table <- map_dfr(result[-1], summary_fun, .id = "parm") %>% 
-  mutate(true = c(.5, .99, .4, .15, .1)) %>% 
-  select(parm, true, everything()) %>% 
+summary_table <- map_dfr(result[-1], summary_fun, .id = "parm") %>%
+  mutate(true = c(.5, .99, .4, .15, .1)) %>%
+  select(parm, true, everything()) %>%
   mutate_if(is.numeric, round, 4)
 
 knitr::kable(summary_table)
-```
 
-### MCMC Chains
-
-```{r}
-map_dfc(result[-1], ~map_dbl(.x, first)) %>% 
-  rowid_to_column() %>% 
-  gather(parm, val, -rowid) %>% 
+## MCMC Chains -----------------------------------------------------------------
+map_dfc(result[-1], ~map_dbl(.x, first)) %>%
+  rowid_to_column() %>%
+  gather(parm, val, -rowid) %>%
   ggplot(aes(x = rowid, y = val)) +
   geom_line(alpha = .9) +
   geom_hline(aes(yintercept = mean), data = summary_table, colour = "red") +
   facet_wrap(~parm, scales = "free_y") +
   labs(x = "Iteration", y = "Value")
-```
 
-### Estimated Betas
+## Estimated betas -------------------------------------------------------------
 
-```{r fig.height=5, fig.width=7}
 mediana <- apply(simplify2array(result$beta), c(1,2), median, simplify = FALSE)
 qt1 <- apply(simplify2array(result$beta), c(1,2), quantile, .05, simplify = FALSE)
 qt2 <- apply(simplify2array(result$beta), c(1,2), quantile, .95, simplify = FALSE)
@@ -136,14 +93,14 @@ p2 <- beta_stats %>%
   ggtitle("Estimated")
 
 p2
-```
 
-## TODO
 
-- [ ] Write pure R script (today)
-- [ ] Write for $b_t$ with $y_{it}$ ()
-- [ ] Test on real data
-- [ ] Hyperparameter control
-- [ ] Better output to use bayesplot
-- [ ] Better Documentation
+## TODO ------------------------------------------------------------------------
+
+# - [ ] Write pure R script (today)
+# - [ ] Write for $b_t$ with $y_{it}$ ()
+# - [ ] Test on real data
+# - [ ] Hyperparameter control
+# - [ ] Better output to use bayesplot
+# - [ ] Better Documentation
 

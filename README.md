@@ -22,12 +22,12 @@ fits the model to one single series (\(I=1\)).
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ───────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ─────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ ggplot2 3.1.0          ✔ purrr   0.3.2     
 #> ✔ tibble  2.1.1          ✔ dplyr   0.8.0.1   
 #> ✔ tidyr   0.8.3.9000     ✔ stringr 1.4.0     
 #> ✔ readr   1.3.1          ✔ forcats 0.3.0
-#> ── Conflicts ──────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 devtools::load_all()
@@ -52,7 +52,6 @@ d_sim <- ltm_sim(
 d_sim$mx <- cbind(d_sim$mx, runif(500)-.5)
 d_sim$mb <- cbind(d_sim$mb, 0)
 
-
 p_sim <- d_sim$mb %>%
   as.data.frame() %>% 
   as_tibble() %>%
@@ -72,8 +71,7 @@ p_sim
 
 ``` r
 result <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 2000, iter = 8000, K = 3)
-result <- res
-readr::write_rds(result, "data-raw/result.rds")
+# readr::write_rds(result, "data-raw/result.rds", compress = "xz")
 ```
 
 ## Results
@@ -156,9 +154,9 @@ p2
 
 ## TODO
 
-  - \[ \] Better Documentation
+  - \[ \] Write pure R script (today)
+  - \[ \] Write for \(b_t\) with \(y_{it}\) ()
   - \[ \] Test on real data
-  - \[ \] Easy way to vary on i (different series)
+  - \[ \] Hyperparameter control
   - \[ \] Better output to use bayesplot
-  - \[ \] Document all functions
-  - \[ \] Add Stan functionality
+  - \[ \] Better Documentation

@@ -32,7 +32,6 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
   # (phi+1)/2 ~ Beta(a0, b0)
   a0 <- 20; b0 <- 1.5
   # d < |mu| + K * v
-  K <- 3
 
   # mcmc loop ------
 
