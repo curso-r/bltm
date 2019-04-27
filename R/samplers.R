@@ -72,15 +72,15 @@ sample_sig_eta <- function(v0, V0, TT, beta, mu, phi, d, K) {
 
 # sample sig -----------------------------------------------------------------
 sample_sig <- function(n0, S0, TT, beta, y, x) {
-  n_hat <- n0 + TT
-  S_hat <- S0 + sum((y - rowSums(x*beta))^2)
+  n_hat <- n0 + TT * dim(x)
+  S_hat <- S0 + sum((y - t(apply(x, 1, function(z) rowSums(z * beta))))^2)
   sqrt(1 / rgamma(1, n_hat/2, S_hat/2))
 }
 
 # sample beta_1:T ------------------------------------------------------------
 Mt_inv <- function(t, sig, xt, sig_eta, phi, TT) {
   nk <- length(sig_eta)
-  xx_sig <- (xt %*% t(xt)) / sig^2
+  xx_sig <- (t(xt) %*% xt) / sig^2
   sig_eta_inv <- solve(diag(nk)*sig_eta^2)
   if (t == 1) {
     v2 <- diag(nk) * (sig_eta^2 / (1-diag(phi)^2))
@@ -92,7 +92,7 @@ Mt_inv <- function(t, sig, xt, sig_eta, phi, TT) {
   }
 }
 mt <- function(t, sig, Mt, xt, yt, b_lag, b_lead, mu, TT, sig_eta, phi) {
-  parte_xy <- (xt*yt)/sig^2
+  parte_xy <- (t(xt)%*%yt)/sig^2
   nk <- length(sig_eta)
   mu <- as.numeric(mu)
   sig_eta_inv <- solve(diag(nk)*sig_eta^2)
@@ -124,7 +124,9 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
 
   # recalculates Mt and mt for beta_t_star if it does not pass threshold
   if (any(abs(beta_t_star) < as.numeric(d_star))) {
-    vxh <- matrix(xt * (abs(beta_t_star) >= as.numeric(d_star)), ncol = 1)
+    vxh <- t(apply(xt, 1, function(zt) {
+      zt * (abs(beta_t_star) >= as.numeric(d_star))
+    }))
     Mt_inv <- Mt_inv(t, sig, vxh, sig_eta, phi, TT)
     Mt <- solve(Mt_inv)
     mt <- mt(t, sig, Mt, vxh, yt, b_lag, b_lead, mu, TT, sig_eta, phi)
@@ -135,7 +137,9 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
 
   # recalculates Mt and mt for beta_t if it does not pass threshold
   if (any(abs(beta_t) < as.numeric(d_star))) {
-    vxh <- matrix(xt * (abs(beta_t) >= as.numeric(d_star)), ncol = 1)
+    vxh <- t(apply(xt, 1, function(zt) {
+      zt * (abs(beta_t) >= as.numeric(d_star))
+    }))
     Mt_inv <- Mt_inv(t, sig, vxh, sig_eta, phi, TT)
     Mt <- solve(Mt_inv)
     mt <- mt(t, sig, Mt, vxh, yt, b_lag, b_lead, mu, TT, sig_eta, phi)
@@ -157,7 +161,7 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
 fXtb <- function(beta, d, x) {
   mat <- matrix(d, ncol = ncol(beta), nrow = nrow(beta), byrow = TRUE)
   b_star <- beta * (abs(beta) >= mat)
-  rowSums(x * b_star)
+  t(apply(x, 1, function(z) rowSums(z * b_star)))
 }
 
 sample_d <- function(mu, K, sig_eta, phi, d, x, y, beta, sig) {
@@ -172,8 +176,8 @@ sample_d <- function(mu, K, sig_eta, phi, d, x, y, beta, sig) {
     xb_velho <- fXtb(beta, d, x)
     xb_novo <- fXtb(beta, d_novo, x)
 
-    dln <- -0.5 * sum(y - xb_novo) / sig^2
-    dlo <- -0.5 * sum(y - xb_velho) / sig^2
+    dln <- -0.5 * sum((y - xb_novo)^2) / sig^2
+    dlo <- -0.5 * sum((y - xb_velho)^2) / sig^2
 
     if (runif(1) < exp(dln-dlo)) d <- d_novo
   }

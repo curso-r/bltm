@@ -1,6 +1,6 @@
-ltm_sim <- function(ns, nk, vmu, mPhi, mSigs, dsig, vd) {
+ltm_sim <- function(ns, nk, ni, vmu, mPhi, mSigs, dsig, vd) {
   # variavel preditora
-  mx <- matrix(runif(ns*nk)-.5, ncol = nk)
+  mx <- array(runif(ns*nk*ni)-.5, dim = c(ni, ns, nk))
   # betas variando no tempo
   mb <- matrix(0, nrow = ns, ncol = nk)
   # valor do primeiro beta
@@ -12,7 +12,10 @@ ltm_sim <- function(ns, nk, vmu, mPhi, mSigs, dsig, vd) {
   # beta zerado
   mb_zerado <- mb * t(apply(abs(mb), 1, function(x) x > vd))
   # resposta
-  vy <- apply(mx * mb, 1, sum) + dsig * rnorm(ns)
+
+  xbs <- plyr::aaply(mx, 1, function(x) x * mb_zerado, .drop = FALSE)
+
+  vy <- plyr::aaply(xbs, 1:2, sum) + dsig * rnorm(ns*ni)
 
   # resultados
   list(vy = vy, mx = mx, mb = mb, mb_zerado = mb_zerado)

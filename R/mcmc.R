@@ -1,8 +1,12 @@
 ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
 
   # variables -----
-  ns <- nrow(x) # number of sample
-  nk <- ncol(x) # number of variables
+  if (length(dim(x)) == 2) x <- array(x, c(1, dim(x)[1], dim(x)[2]))
+  if (is.null(dim(y))) y <- matrix(y, nrow = 1)
+
+  ni <- dim(x)[1] # number of series
+  ns <- dim(x)[2] # number of sample
+  nk <- dim(x)[3] # number of variables
 
   # variaveis p/ salvar
   betas_f <- list()
@@ -42,7 +46,7 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
     # betas
     for (t in 1:ns) {
       betas[t,] <- sample_beta_t(
-        t, betas[t,], vd, dsig, x[t,], y[t],
+        t, betas[t,], vd, dsig, matrix(x[,t,], nrow = ni), y[,t],
         betas[t-(t!=1),], betas[t+(t!=ns),],
         mu, ns, mPhi, mSigs
       )
