@@ -4,7 +4,8 @@
 \alias{ltm_mcmc}
 \title{MCMC LTM}
 \usage{
-ltm_mcmc(x, y, burnin = 2000, iter = 8000, K = 3)
+ltm_mcmc(x, y, burnin = 2000, iter = 8000, K = 3,
+  prior_par = create_prior_parameters())
 }
 \arguments{
 \item{x}{data points}
@@ -16,6 +17,9 @@ ltm_mcmc(x, y, burnin = 2000, iter = 8000, K = 3)
 \item{iter}{number of iterations after burnin}
 
 \item{K}{parameter K}
+
+\item{prior_par}{List of parameters for prior distrributions.
+See \code{\link[=create_prior_parameters]{create_prior_parameters()}}.}
 }
 \description{
 Given \code{x} and \code{y} performs the MCMC optimization.

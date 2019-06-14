@@ -11,6 +11,53 @@ to_matrix <- function(parm, type) {
   x
 }
 
+#' Create the prior parameters.
+#'
+#' Define the priors parameters to be used with [ltm_mcmc()].
+#'
+#' Considering the following priors:
+#'
+#' * alpha ~ N(mu0, s0)
+#' * sig2 ~ IG(n0/2, S0/2)
+#' * sig_eta ~ IG(v0/2, V0/2)
+#' * mu ~ N(m0, s0^2)
+#' * (phi+1)/2 ~ Beta(a0, b0)
+#'
+#' @param a_mu0 mean of alpha normal distribution.
+#' @param a_s0 standard deviation of alpha's normal distribution
+#' @param n0 sig2 inverse gamma shape parameter
+#' @param S0 sig2 inverse gamma location parameter
+#' @param v0 sig_eta inverse gamma shape parameter
+#' @param V0 sig_eta inverse gamma location parameter
+#' @param m0 mu normal's mean parameter
+#' @param s0 mu normals standard deviation
+#' @param a0 a0 beta's shape parameter
+#' @param b0 a0 beta's location parameter
+#'
+#' @export
+create_prior_parameters <- function(a_mu0 = 0, a_s0 = .1,
+                                    # sig2 ~ IG(n0/2, S0/2)
+                                    n0 = 6, S0 = 0.06,
+                                    # sig_eta ~ IG(v0/2, V0/2)
+                                    v0 = 6, V0 = 0.06,
+                                    # mu ~ N(m0, s0^2)
+                                    m0 = 0, s0 = 1,
+                                    # (phi+1)/2 ~ Beta(a0, b0)
+                                    a0 = 20, b0 = 1.5) {
+  list(
+    a_mu0 = a_mu0,
+    a_s0 = a_s0,
+    n0 = n0,
+    S0 = S0,
+    v0 = v0,
+    V0 = V0,
+    m0 = 0,
+    s0 = 1,
+    a0 = 20,
+    b0 = 1.5
+  )
+}
+
 #' MCMC LTM
 #'
 #' Given `x` and `y` performs the MCMC optimization.
@@ -20,9 +67,11 @@ to_matrix <- function(parm, type) {
 #' @param burnin number of burnin iterations
 #' @param iter number of iterations after burnin
 #' @param K parameter K
+#' @param prior_par List of parameters for prior distrributions.
+#'    See [create_prior_parameters()].
 #'
 #' @export
-ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
+ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create_prior_parameters()) {
 
   # variables -----
   if (length(dim(x)) == 2) x <- array(x, c(1, dim(x)[1], dim(x)[2]))
@@ -53,15 +102,15 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
   # priors -----
 
   # alpha ~ N(mu0, s0)
-  mu0 <- 0; s0 <- .1
+  a_mu0 <- prior_par$a_m0; a_s0 <- prior_par$a_s0
   # sig2 ~ IG(n0/2, S0/2)
-  n0 <- 6; S0 <- 0.06
+  n0 <- prior_par$n0; S0 <- prior_par$S0
   # sig_eta ~ IG(v0/2, V0/2)
-  v0 <- 6; V0 <- 0.06
+  v0 <- prior_par$v0; V0 <- prior_par$V0
   # mu ~ N(m0, s0^2)
-  m0 <- 0; s0 <- 1
+  m0 <- prior_par$m0; s0 <- prior_par$s0
   # (phi+1)/2 ~ Beta(a0, b0)
-  a0 <- 20; b0 <- 1.5
+  a0 <- prior_par$a0; b0 <- prior_par$b0
   # d < |mu| + K * v
 
   # mcmc loop ------
@@ -88,7 +137,7 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
 
     # sig, threshold
     dsig <- sample_sig(n0, S0, ns, betas[-(ns+1),], y, x)
-    alpha <- sample_alpha(mu0, s0, betas[-(ns+1),], dsig, nk, ni, y, x)
+    alpha <- sample_alpha(a_mu0, a_s0, betas[-(ns+1),], dsig, nk, ni, y, x)
     # print(alpha)
 
     vd <- sample_d(mu, K, mSigs, mPhi, vd, x, y, betas, dsig)
