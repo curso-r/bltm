@@ -1,3 +1,4 @@
 ^README\.Rmd$
 ^ltm\.Rproj$
 ^\.Rproj\.user$
+data-raw$
