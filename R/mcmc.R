@@ -11,7 +11,17 @@ to_matrix <- function(parm, type) {
   x
 }
 
-
+#' MCMC LTM
+#'
+#' Given `x` and `y` performs the MCMC optimization.
+#'
+#' @param x data points
+#' @param y response variable
+#' @param burnin number of burnin iterations
+#' @param iter number of iterations after burnin
+#' @param K parameter K
+#'
+#' @export
 ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
 
   # variables -----
