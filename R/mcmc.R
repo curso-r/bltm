@@ -1,3 +1,17 @@
+to_matrix <- function(parm, type) {
+  if (type == "phi") parm <- diag(parm)
+  x <- matrix(parm, nrow = 1)
+  if (type %in% c("alpha", "d", "sig_eta", "mu", "sig", "phi")) {
+    names(x) <- paste0(rep(type, length(parm)), "[", seq_along(parm), "]")
+  } else if (type == "beta") {
+    names(x) <- sprintf("beta[%d,%d]",
+                        rep(seq_len(nrow(parm)), ncol(parm)),
+                        rep(seq_len(ncol(parm)), each = nrow(parm)))
+  }
+  x
+}
+
+
 ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
 
   # variables -----
@@ -8,14 +22,6 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
   ns <- dim(x)[2] # number of sample
   nk <- dim(x)[3] # number of variables
 
-  # variaveis p/ salvar
-  betas_f <- list()
-  mu_f <- list()
-  phi_f <- list()
-  d_f <- list()
-  sig_f <- list()
-  sig_eta_f <- list()
-
   # initial values
   dsig <- 0.1
   mSigs <- rep(0.01, nk)
@@ -24,9 +30,20 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
   vd <- matrix(0, nk)
   betas <- matrix(.1, ncol = nk, nrow = ns)
   mu <- matrix(0, nrow = nk)
+  alpha <- matrix(0, nrow = ni)
+
+  saida <- purrr::map2(
+    list(alpha, dsig, mPhi, mu, vd, mSigs, betas),
+    c("alpha", "sig", "phi", "mu", "d", "sig_eta", "beta"),
+    to_matrix
+  )
+  nm <- unlist(purrr::map(saida, names))
+  post <- do.call(cbind, saida)
 
   # priors -----
 
+  # alpha ~ N(mu0, s0)
+  mu0 <- 0; s0 <- .1
   # sig2 ~ IG(n0/2, S0/2)
   n0 <- 6; S0 <- 0.06
   # sig_eta ~ IG(v0/2, V0/2)
@@ -61,16 +78,20 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
 
     # sig, threshold
     dsig <- sample_sig(n0, S0, ns, betas[-(ns+1),], y, x)
+    alpha <- sample_alpha(mu0, s0, betas[-(ns+1),], dsig, nk, ni, y, x)
+    # print(alpha)
+
     vd <- sample_d(mu, K, mSigs, mPhi, vd, x, y, betas, dsig)
 
     # store values
     if (j > 0) {
-      betas_f[[j]] <- betas
-      mu_f[[j]] <- mu
-      phi_f[[j]] <- mPhi
-      d_f[[j]] <- vd
-      sig_f[[j]] <- dsig
-      sig_eta_f[[j]] <- mSigs
+      saida <- purrr::map2(
+        list(alpha, dsig, mPhi, mu, vd, mSigs, betas),
+        c("alpha", "sig", "phi", "mu", "d", "sig_eta", "beta"),
+        to_matrix
+      )
+      m_new <- do.call(cbind, saida)
+      post <- rbind(post, m_new)
     }
 
     if (j %% 10 == 0) {
@@ -78,9 +99,7 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3) {
       message(sprintf(m, mu[1,1], mPhi[1,1], vd[1,1], mSigs[1], dsig))
     }
   }
-
-  list(beta = betas_f, mu = mu_f, phi = phi_f,
-       d = d_f, sig = sig_f, sig_eta = sig_eta_f)
+  magrittr::set_colnames(post[-1,], nm)
 }
 
 
