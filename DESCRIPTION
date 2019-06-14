@@ -12,7 +12,15 @@ Encoding: UTF-8
 Language: es
 LazyData: true
 Imports: 
-    mvtnorm,
-    magrittr
+    mvnfast,
+    magrittr,
+    dplyr,
+    ggplot2,
+    plyr,
+    purrr,
+    readr,
+    stringr,
+    tibble,
+    tidyr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1

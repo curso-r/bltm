@@ -77,11 +77,25 @@ sample_sig <- function(n0, S0, TT, beta, y, x) {
   sqrt(1 / rgamma(1, n_hat/2, S_hat/2))
 }
 
+# sample alpha --------------------------------------------------------------
+sample_alpha <- function(mu0, s0, beta, sig, TT, ni, y, x) {
+  if (is.null(dim(y))) {
+    ybar <- mean(y)
+  } else {
+    ybar <- rowMeans(y)
+  }
+  a <- ybar - apply(x, 1, function(z) mean(z * beta))
+  mu_new <- (TT * a + mu0 * s0) / (TT + s0)
+  rnorm(ni, mu_new, sig)
+}
+
 # sample beta_1:T ------------------------------------------------------------
 Mt_inv <- function(t, sig, xt, sig_eta, phi, TT) {
   nk <- length(sig_eta)
   xx_sig <- (t(xt) %*% xt) / sig^2
-  sig_eta_inv <- solve(diag(nk)*sig_eta^2)
+  ## melhorando a eficiencia tirando o solve
+  # sig_eta_inv <- solve(diag(nk)*sig_eta^2)
+  sig_eta_inv <- diag(1/sig_eta^2)
   if (t == 1) {
     v2 <- diag(nk) * (sig_eta^2 / (1-diag(phi)^2))
     xx_sig + solve(v2) + sig_eta_inv * phi^2
@@ -95,10 +109,15 @@ mt <- function(t, sig, Mt, xt, yt, b_lag, b_lead, mu, TT, sig_eta, phi) {
   parte_xy <- (t(xt)%*%yt)/sig^2
   nk <- length(sig_eta)
   mu <- as.numeric(mu)
-  sig_eta_inv <- solve(diag(nk)*sig_eta^2)
+  ## melhorando a eficiencia tirando o solve
+  # sig_eta_inv <- solve(diag(nk)*sig_eta^2)
+  sig_eta_inv <- diag(1/sig_eta^2)
   if (t == 1) {
-    v2 <- diag(nk) * (sig_eta^2 / (1-diag(phi)^2))
-    parte_v2 <- solve(v2) %*% mu
+    ## melhorando a eficiencia tirando o solve
+    # v2 <- diag(nk) * (sig_eta^2 / (1-diag(phi)^2))
+    # parte_v2 <- solve(v2) %*% mu
+    v2 <- diag(1/(sig_eta^2 / (1-diag(phi)^2)))
+    parte_v2 <- v2 %*% mu
     parte_beta <- b_lead - (diag(nk)-phi) %*% mu
     parte_beta_mu <- parte_v2 + sig_eta_inv %*% phi %*% parte_beta
     Mt %*% (parte_xy + parte_beta_mu)
@@ -118,9 +137,9 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
   mt <- mt(t, sig, Mt, xt, yt, b_lag, b_lead, mu, TT, sig_eta, phi)
 
   # accept
-  beta_t_star <- mvtnorm::rmvnorm(1, mt, Mt)
-  dhn <- mvtnorm::dmvnorm(beta_t_star, mt, Mt, log = TRUE)
-  dho <- mvtnorm::dmvnorm(beta_t, mt, Mt, log = TRUE)
+  beta_t_star <- mvnfast::rmvn(1, mt, Mt)
+  dhn <- mvnfast::dmvn(beta_t_star, mt, Mt, log = TRUE)
+  dho <- mvnfast::dmvn(beta_t, mt, Mt, log = TRUE)
 
   # recalculates Mt and mt for beta_t_star if it does not pass threshold
   if (any(abs(beta_t_star) < as.numeric(d_star))) {
@@ -130,7 +149,7 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
     Mt_inv <- Mt_inv(t, sig, vxh, sig_eta, phi, TT)
     Mt <- solve(Mt_inv)
     mt <- mt(t, sig, Mt, vxh, yt, b_lag, b_lead, mu, TT, sig_eta, phi)
-    dln <- mvtnorm::dmvnorm(beta_t_star, mt, Mt, log = TRUE)
+    dln <- mvnfast::dmvn(beta_t_star, mt, Mt, log = TRUE)
   } else {
     dln <- dhn
   }
@@ -143,7 +162,7 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
     Mt_inv <- Mt_inv(t, sig, vxh, sig_eta, phi, TT)
     Mt <- solve(Mt_inv)
     mt <- mt(t, sig, Mt, vxh, yt, b_lag, b_lead, mu, TT, sig_eta, phi)
-    dlo <- mvtnorm::dmvnorm(beta_t, mt, Mt, log = TRUE)
+    dlo <- mvnfast::dmvn(beta_t, mt, Mt, log = TRUE)
   } else {
     dlo <- dho
   }
