@@ -30,15 +30,21 @@ simulacoes <- tibble(
 
 ajustar <- function(i) {
   d_sim <- with(simulacoes, sim[[i]])
-  res <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 1000, iter = 5000, K = 3)
+  res <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 100, iter = 100, K = 3)
   l <- tibble(id = i, data = list(d_sim), result = list(res))
   write_rds(l, sprintf("data-raw/results_multivariate/id_%02d.rds", i))
 }
 
-res <- ajustar(1)
+library(future)
+plan(multiprocess, workers = 4)
+res <- furrr::future_map(1:4, ~ajustar(1))
 
 # ------------------------------------------------------------------------------
-a <- res$result[[1]]
+a <- res[[1]]$result[[1]]
+
+# ------------------------------------------------------------------------------
+
+
 
 # tabelas resumo ---------------------------------------------------------------
 # deixei explicito para ficar facil de editar, caso queira
@@ -96,9 +102,9 @@ knitr::kable(tabelas[[1]])
 knitr::kable(tabelas[[2]])
 
 # graficos betas ---------------------------------------------------------------
-grafico_betas(a, 1, real_values = res$data[[1]])
-grafico_betas(a, 1:2, real_values = res$data[[1]])
-grafico_betas(a, 1:3, real_values = res$data[[1]])
+grafico_betas(a, 1, real_values = res[[1]]$data[[1]])
+grafico_betas(a, 1:2, real_values = res[[1]]$data[[1]])
+grafico_betas(a, 1:3, real_values = res[[1]]$data[[1]])
 
 # MCMC traces ------------------------------------------------------------------
 # colocar os indices ao lado do \\[ se desejar pegar algum especifico
