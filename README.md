@@ -6,13 +6,11 @@
 The goal of ltm is to fit Bayesian Latent Threshold Models using R. The
 model in the AR(1) form is defined by these equations:
 
-\[
-\begin{aligned}
+\[\begin{aligned}
 y_{it} &= \sum_{j=1}^J x_{ijt} b_{ijt} + \varepsilon_{it} \\
 b_{ijt} &= \beta_{ijt} \,\mathbb I(|\beta_{ijt}| \geq d_{ij}) \\
 \beta_{ij,t+1} &= \mu_{ij} + \phi_{ij}(\beta_{ijt}-\mu_{ij}) + \eta_{ijt}
-\end{aligned}
-\]
+\end{aligned}\]
 
 for \(i \in 1,\dots, I\), \(j \in 1,\dots, J\) and \(t \in 1,\dots, T\).
 These models can be fit separatedly for each \(i\). The example below
@@ -22,12 +20,12 @@ fits the model to one single series (\(I=1\)).
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────── tidyverse 1.2.1 ──
-#> ✔ ggplot2 3.1.0          ✔ purrr   0.3.2     
-#> ✔ tibble  2.1.1          ✔ dplyr   0.8.0.1   
-#> ✔ tidyr   0.8.3.9000     ✔ stringr 1.4.0     
-#> ✔ readr   1.3.1          ✔ forcats 0.3.0
-#> ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ✔ ggplot2 3.2.0     ✔ purrr   0.3.2
+#> ✔ tibble  2.1.3     ✔ dplyr   0.8.1
+#> ✔ tidyr   0.8.3     ✔ stringr 1.4.0
+#> ✔ readr   1.3.1     ✔ forcats 0.4.0
+#> ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 devtools::load_all()
@@ -40,7 +38,8 @@ devtools::load_all()
 set.seed(103)
 
 d_sim <- ltm_sim(
-  ns = 500, nk = 2, 
+  ni = 5, ns = 500, nk = 2, 
+  alpha = 0,
   vmu = matrix(c(.5,.5), nrow = 2), 
   mPhi = diag(2) * c(.99, .99),
   mSigs = c(.1,.1),
@@ -49,34 +48,31 @@ d_sim <- ltm_sim(
 )
 
 # adding zeroed beta
-d_sim$mx <- cbind(d_sim$mx, runif(500)-.5)
+binder <- array(runif(500)-.5, c(5, 500, 1))
+d_sim$mx <- abind::abind(d_sim$mx, binder, along = 3)
 d_sim$mb <- cbind(d_sim$mb, 0)
-
-p_sim <- d_sim$mb %>%
-  as.data.frame() %>% 
-  as_tibble() %>%
-  set_names(paste0("beta", 1:(ncol(.)))) %>%
-  rowid_to_column() %>%
-  gather(beta, val, -rowid) %>%
-  ggplot(aes(x = rowid, y = val)) +
-  geom_line() +
-  facet_wrap(~beta, ncol = 2) +
-  geom_hline(yintercept = c(-1,1) * .4, linetype = 2) +
-  ggtitle("Simulated")
-
-p_sim
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
-
 ``` r
-result <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 2000, iter = 8000, K = 3)
+result <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 100, iter = 500)
 # readr::write_rds(result, "data-raw/result.rds", compress = "xz")
 ```
 
+    Iteration:     1 /   600 [  0%]  (Warmup)
+    Iteration:    60 /   600 [ 10%]  (Warmup)
+    Iteration:   120 /   600 [ 20%]  (Sampling)
+    Iteration:   180 /   600 [ 30%]  (Sampling)
+    Iteration:   240 /   600 [ 40%]  (Sampling)
+    Iteration:   300 /   600 [ 50%]  (Sampling)
+    Iteration:   360 /   600 [ 60%]  (Sampling)
+    Iteration:   420 /   600 [ 70%]  (Sampling)
+    Iteration:   480 /   600 [ 80%]  (Sampling)
+    Iteration:   540 /   600 [ 90%]  (Sampling)
+    Iteration:   600 /   600 [ 100%]  (Sampling)
+
 ## Results
 
-Results after 2000 burnin and 8000 iterations.
+Results after 100 burnin and 500 iterations.
 
 ``` r
 result <- read_rds("data-raw/result.rds")
@@ -84,42 +80,49 @@ result <- read_rds("data-raw/result.rds")
 
 ### Summary statistics
 
-(like Table 1 in the paper)
-
 ``` r
-summary_fun <- function(.x) {
-  v1 <- map_dbl(.x, first)
-  q <- quantile(v1, c(.05, .95))
-  tibble(mean = mean(v1), sd = sd(v1), q05 = q[1], q95 = q[2])
-}
-
-summary_table <- map_dfr(result[-1], summary_fun, .id = "parm") %>% 
-  mutate(true = c(.5, .99, .4, .15, .1)) %>% 
-  select(parm, true, everything()) %>% 
-  mutate_if(is.numeric, round, 4)
+vars_to_analyse <- !str_detect(colnames(result), "beta\\[")
+summary_table <- result[,vars_to_analyse] %>%
+  as.data.frame() %>%
+  tibble::rowid_to_column() %>%
+  tidyr::gather(key, val, -rowid) %>%
+  dplyr::group_by(key) %>%
+  dplyr::summarise(
+    median = median(val),
+    sd = sd(val),
+    q025 = quantile(val, 0.025),
+    q975 = quantile(val, 0.975)
+  )
 
 knitr::kable(summary_table)
 ```
 
-| parm     | true |   mean |     sd |      q05 |    q95 |
-| :------- | ---: | -----: | -----: | -------: | -----: |
-| mu       | 0.50 | 0.4617 | 0.3846 | \-0.2004 | 0.9944 |
-| phi      | 0.99 | 0.9865 | 0.0075 |   0.9726 | 0.9967 |
-| d        | 0.40 | 0.5820 | 0.3671 |   0.0475 | 1.1406 |
-| sig      | 0.15 | 0.1820 | 0.0135 |   0.1615 | 0.2059 |
-| sig\_eta | 0.10 | 0.0961 | 0.0164 |   0.0718 | 0.1253 |
+| key           |      median |        sd |        q025 |      q975 |
+| :------------ | ----------: | --------: | ----------: | --------: |
+| alpha\[1\]    |   0.0076648 | 0.1781915 | \-0.3405058 | 0.3593770 |
+| alpha\[2\]    | \-0.0054158 | 0.1830903 | \-0.3785451 | 0.3289486 |
+| alpha\[3\]    | \-0.0047880 | 0.1834158 | \-0.3854517 | 0.3297607 |
+| alpha\[4\]    | \-0.0163057 | 0.1746813 | \-0.3578320 | 0.2923298 |
+| alpha\[5\]    | \-0.0016525 | 0.1801260 | \-0.3304960 | 0.3382569 |
+| d\[1\]        |   0.3293945 | 0.0496160 |   0.2324488 | 0.4076028 |
+| d\[2\]        |   0.0150496 | 0.0559342 |   0.0150496 | 0.1553439 |
+| d\[3\]        |   0.2701171 | 0.0146839 |   0.2296899 | 0.2701171 |
+| mu\[1\]       |   0.5296798 | 0.3416395 | \-0.2345459 | 1.0597430 |
+| mu\[2\]       |   0.5947912 | 0.2164022 |   0.1596099 | 1.0128513 |
+| mu\[3\]       |   0.0665906 | 0.0173249 |   0.0260728 | 0.0945483 |
+| phi\[1\]      |   0.9904074 | 0.0050235 |   0.9784768 | 0.9977583 |
+| phi\[2\]      |   0.9713490 | 0.0113390 |   0.9458727 | 0.9921012 |
+| phi\[3\]      |   0.6437641 | 0.1325909 |   0.3581005 | 0.8528770 |
+| sig\_eta\[1\] |   0.0731782 | 0.0083558 |   0.0561148 | 0.0888805 |
+| sig\_eta\[2\] |   0.1222165 | 0.0138444 |   0.0921127 | 0.1494326 |
+| sig\_eta\[3\] |   0.0623744 | 0.0100680 |   0.0486990 | 0.0867437 |
+| sig\[1\]      |   0.1760752 | 0.0045631 |   0.1677408 | 0.1878592 |
 
 ### MCMC Chains
 
 ``` r
-map_dfc(result[-1], ~map_dbl(.x, first)) %>% 
-  rowid_to_column() %>% 
-  gather(parm, val, -rowid) %>% 
-  ggplot(aes(x = rowid, y = val)) +
-  geom_line(alpha = .9) +
-  geom_hline(aes(yintercept = mean), data = summary_table, colour = "red") +
-  facet_wrap(~parm, scales = "free_y") +
-  labs(x = "Iteration", y = "Value")
+bayesplot::mcmc_trace(result, regex_pars = "mu\\[[12]") +
+  theme_bw()
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
@@ -127,36 +130,13 @@ map_dfc(result[-1], ~map_dbl(.x, first)) %>%
 ### Estimated Betas
 
 ``` r
-mediana <- apply(simplify2array(result$beta), c(1,2), median, simplify = FALSE)
-qt1 <- apply(simplify2array(result$beta), c(1,2), quantile, .05, simplify = FALSE)
-qt2 <- apply(simplify2array(result$beta), c(1,2), quantile, .95, simplify = FALSE)
-beta_stats <- imap_dfr(list(mediana = mediana, qt1 = qt1, qt2 = qt2), ~{
-  .x %>%
-    as.data.frame() %>%
-    as_tibble() %>%
-    rowid_to_column() %>%
-    gather(beta, valor, -rowid) %>%
-    mutate(tipo = .y)
-})
-
-p2 <- beta_stats %>%
-  spread(tipo, valor) %>%
-  ggplot(aes(x = rowid, y = mediana)) +
-  geom_line() +
-  facet_wrap(~beta, ncol = 2) +
-  geom_ribbon(aes(ymin = qt1, ymax = qt2), alpha = .2) +
-  ggtitle("Estimated")
-
-p2
+plot_betas(result, 1:3, real_values = d_sim) +
+  facet_wrap(~factor(p), ncol = 2) +
+  theme_bw()
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
-## TODO
+## LICENSE
 
-  - \[ \] Write pure R script (today)
-  - \[ \] Write for \(b_t\) with \(y_{it}\) ()
-  - \[ \] Test on real data
-  - \[ \] Hyperparameter control
-  - \[ \] Better output to use bayesplot
-  - \[ \] Better Documentation
+MIT
