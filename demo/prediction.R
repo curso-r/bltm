@@ -4,7 +4,7 @@ if (!require(ltm)) devtools::install()
 devtools::load_all()
 
 ## Simulated Example -----------------------------------------------------------
-set.seed(1)
+set.seed(2)
 
 simular <- function() {
   d_sim <- ltm_sim(
