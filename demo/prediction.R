@@ -29,7 +29,14 @@ y_train <- d_sim$vy[,ind_train]
 x_test <- d_sim$mx[,-ind_train,]
 y_test <- d_sim$vy[,-ind_train]
 
-res <- ltm_mcmc(x_train, y_train, burnin = 2000, iter = 8000, K = 3)
+
+library(future)
+plan(multiprocess, workers = 4)
+result <- furrr::future_imap(1:4, ~{
+  ltm_mcmc(x_train, y_train, burnin = 2000, iter = 8000, K = 3)
+})
+
+res <- do.call(rbind, result)
 
 # previsoes na base de treino
 pred_post_train <- ltm_pred(res, x_train)
