@@ -102,7 +102,7 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create
   # priors -----
 
   # alpha ~ N(mu0, s0)
-  a_mu0 <- prior_par$a_m0; a_s0 <- prior_par$a_s0
+  a_mu0 <- prior_par$a_mu0; a_s0 <- prior_par$a_s0
   # sig2 ~ IG(n0/2, S0/2)
   n0 <- prior_par$n0; S0 <- prior_par$S0
   # sig_eta ~ IG(v0/2, V0/2)
@@ -115,9 +115,18 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create
 
   # mcmc loop ------
 
-  for (j in seq(-burnin, iter)) {
+  total <- burnin + iter
+  iters <- unique(c(1, floor(total / 10 * 1:10)) - burnin)
 
-    if (j %% 10 == 0) cat("iter", j, ": ")
+  for (j in seq(-burnin+1, iter)) {
+
+    if (j %in% iters) {
+      p <- as.integer(floor((j + burnin) / total * 100))
+      type <- ifelse(j >= 0, "Sampling", "Warmup")
+      cat(sprintf("Iteration: % 5d / % 5d [% 3d%%]  (%s)\n",
+                  as.integer(j+burnin), as.integer(total), p, type),
+          sep = "")
+    }
 
     # betas
     for (t in 1:ns) {
@@ -153,10 +162,10 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create
       post <- rbind(post, m_new)
     }
 
-    if (j %% 10 == 0) {
-      m <- "mu=%.2f, phi=%.2f, d=%.2f, sig_eta=%.2f, sig=%.2f"
-      message(sprintf(m, mu[1,1], mPhi[1,1], vd[1,1], mSigs[1], dsig))
-    }
+    # if (j %% 10 == 0) {
+    #   m <- "mu=%.2f, phi=%.2f, d=%.2f, sig_eta=%.2f, sig=%.2f"
+    #   message(sprintf(m, mu[1,1], mPhi[1,1], vd[1,1], mSigs[1], dsig))
+    # }
   }
   magrittr::set_colnames(post[-1,], nm)
 }
