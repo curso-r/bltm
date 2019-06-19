@@ -11,10 +11,10 @@ sample_mu <- function(phi, sig_eta, beta, d, w2_0, TT, mu_0, K) {
   w2 <- w2_hat(w2_0, phi, sig_eta, TT)
   mu <- mu_hat(w2, w2_0, mu_0, phi, TT, beta, sig_eta)
   # generates mu from truncated normal distribution
-  mu_try <- rnorm(1, mu, sqrt(w2))
+  mu_try <- stats::rnorm(1, mu, sqrt(w2))
   ntry <- 0
   while(ntry < 1000 && (d > abs(mu_try) + K * v)) {
-    mu_try <- rnorm(1, mu, sqrt(w2))
+    mu_try <- stats::rnorm(1, mu, sqrt(w2))
     ntry <- ntry + 1
   }
   mu_try
@@ -31,24 +31,24 @@ sample_phi <- function(beta, mu, TT, sig_eta, d, alpha_0, beta_0, phi, K) {
 
   # só tenta gerar 1000 vezes
   ntry <- 0
-  phi_try <- rnorm(1, phi_hat, sqrt(sig_phi2))
+  phi_try <- stats::rnorm(1, phi_hat, sqrt(sig_phi2))
   phi_star <- phi
   # a regra de parada exclui phi's não estacionários
   while(ntry < 1000 && (phi_try <= 0 || abs(phi_try) >= 1-1e-4 || (d > abs(mu)+K*sig_eta/sqrt(1-phi_try^2)))) {
-    phi_try <- rnorm(1, phi_hat, sqrt(sig_phi2))
+    phi_try <- stats::rnorm(1, phi_hat, sqrt(sig_phi2))
     ntry <- ntry + 1
   }
   if (ntry < 1000) phi_star <- phi_try
 
   # accept
-  dphi <- dbeta((phi+1)/2, alpha_0, beta_0, log = TRUE)
-  dphi_star <- dbeta((phi_star+1)/2, alpha_0, beta_0, log = TRUE)
+  dphi <- stats::dbeta((phi+1)/2, alpha_0, beta_0, log = TRUE)
+  dphi_star <- stats::dbeta((phi_star+1)/2, alpha_0, beta_0, log = TRUE)
   # conta com os phi
   sq_phi <- log(sqrt(1-phi^2))
   sq_phi_star <- log(sqrt(1-phi_star^2))
   # razao e denominador conforme codigo
   dfrac <- exp(dphi_star + sq_phi_star - dphi - sq_phi)
-  if (runif(1) < dfrac) {
+  if (stats::runif(1) < dfrac) {
     phi_try
   } else {
     phi
@@ -61,10 +61,10 @@ sample_sig_eta <- function(v0, V0, TT, beta, mu, phi, d, K) {
   v_hat <- v0 + TT
   # no paper, b_cen[1] está ao quadrado, no código não
   V_hat <- V0 + (1-phi^2) * b_cen[1] + sum((b_cen[-1]-phi*b_cen[-TT])^2)
-  sig_eta_try <- sqrt(1/rgamma(1, v_hat/2, V_hat/2))
+  sig_eta_try <- sqrt(1/stats::rgamma(1, v_hat/2, V_hat/2))
   ntry <- 0
   while(ntry < 1000 && (d > abs(mu) + K*sig_eta_try/sqrt(1-phi^2))) {
-    sig_eta_try <- sqrt(1/rgamma(1, v_hat/2, V_hat/2))
+    sig_eta_try <- sqrt(1/stats::rgamma(1, v_hat/2, V_hat/2))
     ntry <- ntry + 1
   }
   sig_eta_try
@@ -74,7 +74,7 @@ sample_sig_eta <- function(v0, V0, TT, beta, mu, phi, d, K) {
 sample_sig <- function(n0, S0, TT, beta, y, x) {
   n_hat <- n0 + TT * dim(x)
   S_hat <- S0 + sum((y - t(apply(x, 1, function(z) rowSums(z * beta))))^2)
-  sqrt(1 / rgamma(1, n_hat/2, S_hat/2))
+  sqrt(1 / stats::rgamma(1, n_hat/2, S_hat/2))
 }
 
 # sample alpha --------------------------------------------------------------
@@ -86,7 +86,7 @@ sample_alpha <- function(mu0, s0, beta, sig, TT, ni, y, x) {
   }
   a <- ybar - apply(x, 1, function(z) mean(z * beta))
   mu_new <- (TT * a + mu0 * s0) / (TT + s0)
-  rnorm(ni, mu_new, sig)
+  stats::rnorm(ni, mu_new, sig)
 }
 
 # sample beta_1:T ------------------------------------------------------------
@@ -169,7 +169,7 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
 
   # accept probability
   dfrac <- exp(dln - dhn - dlo + dho)
-  if (runif(1) < dfrac) {
+  if (stats::runif(1) < dfrac) {
     beta_t_star
   } else {
     beta_t
@@ -191,14 +191,14 @@ sample_d <- function(mu, K, sig_eta, phi, d, x, y, beta, sig) {
   d_novo <- as.numeric(d)
 
   for(i in 1:nk) {
-    d_novo[i] <- runif(1) * lim_superior[i]
+    d_novo[i] <- stats::runif(1) * lim_superior[i]
     xb_velho <- fXtb(beta, d, x)
     xb_novo <- fXtb(beta, d_novo, x)
 
     dln <- -0.5 * sum((y - xb_novo)^2) / sig^2
     dlo <- -0.5 * sum((y - xb_velho)^2) / sig^2
 
-    if (runif(1) < exp(dln-dlo)) d <- d_novo
+    if (stats::runif(1) < exp(dln-dlo)) d <- d_novo
   }
   matrix(d, nrow = nk)
 }
