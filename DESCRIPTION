@@ -21,6 +21,7 @@ Imports:
     readr,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    abind
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
