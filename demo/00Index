@@ -6,3 +6,5 @@ script_univariado_1     Univariate script 1
 script_univariado_100     Univariate script 100
 prediction     Calculate predictions
 rhat     Calculate rhat
+out      Outputs for the model
+plot_betas    Plot the beta params

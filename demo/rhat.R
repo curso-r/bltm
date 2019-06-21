@@ -28,11 +28,11 @@ d_sim <- simular()
 # faz 4 chains do mesmo modelo em paralelo
 library(future)
 plan(multiprocess, workers = 4)
-res <- furrr::future_imap(1:4, ~{
+res2 <- furrr::future_imap(1:4, ~{
   ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 100, iter = 100, K = 3)
 })
 
-a_array <- res %>%
+a_array <- res2 %>%
   abind::abind(along = 3) %>%
   aperm(c(3, 1, 2))
 

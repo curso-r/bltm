@@ -33,7 +33,7 @@ y_test <- d_sim$vy[,-ind_train]
 library(future)
 plan(multiprocess, workers = 4)
 result <- furrr::future_imap(1:4, ~{
-  ltm_mcmc(x_train, y_train, burnin = 2000, iter = 8000, K = 3)
+  ltm_mcmc(x_train, y_train, burnin = 100, iter = 100, K = 3)
 })
 
 res <- do.call(rbind, result)
