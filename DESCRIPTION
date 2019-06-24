@@ -16,6 +16,7 @@ Imports:
     plyr,
     purrr,
     tibble,
-    abind
+    abind,
+    Rfast
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
