@@ -19,9 +19,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ltm
+# bltm
 
-The goal of ltm is to fit Bayesian Latent Threshold Models using R. The model in the AR(1) form is defined by these equations:
+The goal of bltm is to fit Bayesian Latent Threshold Models using R. The model in the AR(1) form is defined by these equations:
 
 $$\begin{aligned}
 y_{it} &= \sum_{j=1}^J x_{ijt} b_{ijt} + \varepsilon_{it} \\

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MCMC LTM — ltm_mcmc • ltm</title>
+<title>MCMC LTM — ltm_mcmc • bltm</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -64,7 +64,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">ltm</a>
+        <a class="navbar-link" href="../index.html">bltm</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
       </span>
     </div>
@@ -108,7 +108,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>ltm_mcmc</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>2000</span>, <span class='kw'>iter</span> <span class='kw'>=</span> <span class='fl'>8000</span>, <span class='kw'>K</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>prior_par</span> <span class='kw'>=</span> <span class='fu'><a href='create_prior_parameters.html'>create_prior_parameters</a></span>())</pre>
+  <span class='kw'>prior_par</span> <span class='kw'>=</span> <span class='fu'>create_prior_parameters</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -136,7 +136,7 @@
     <tr>
       <th>prior_par</th>
       <td><p>List of parameters for prior distrributions.
-See <code><a href='create_prior_parameters.html'>create_prior_parameters()</a></code>.</p></td>
+See <code>create_prior_parameters()</code>.</p></td>
     </tr>
     </table>
     
@@ -145,7 +145,7 @@ See <code><a href='create_prior_parameters.html'>create_prior_parameters()</a></
     <pre class="examples"><div class='input'>
 <span class='co'># Generates 10 series, each one with 500 observations and 2 regressors.</span>
 
-<span class='no'>d_sim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ltm_sim.html'>ltm_sim</a></span>(
+<span class='no'>d_sim</span> <span class='kw'>&lt;-</span> <span class='fu'>ltm_sim</span>(
   <span class='kw'>ns</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>nk</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ni</span> <span class='kw'>=</span> <span class='fl'>10</span>,
   <span class='kw'>vmu</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>.5</span>,<span class='fl'>.5</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>2</span>),
   <span class='kw'>mPhi</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span>(<span class='fl'>2</span>) * <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>.99</span>, <span class='fl'>.99</span>),

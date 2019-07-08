@@ -1,5 +1,5 @@
 ^README\.Rmd$
-^ltm\.Rproj$
+^bltm\.Rproj$
 ^\.Rproj\.user$
 data-raw$
 ^\.travis\.yml$
