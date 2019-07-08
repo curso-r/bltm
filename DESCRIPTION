@@ -1,22 +1,18 @@
 Package: ltm
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Latent Threshold Modeling Bayesian Computation
+Version: 0.0.1
 Authors@R: c(
     person("Julio", "Trecenti", email = "julio.trecenti@gmail.com", role = "cre"),
-    person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = "aut"),
-    person("Fernando", "Tassinari", email = "fernandotm@al.insper.edu.br", role = "aut"))
-Description: What the package does (one paragraph).
+    person("Fernando", "Tassinari", email = "fernandotm@al.insper.edu.br", role = "aut"),
+    person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = "ctb"))
+Description: Fits Latent Threshold Modeling (LTM) model for simulated data
+    and describes how to adjust model using real data. This package is based
+    on the paper Nakajima and West (2016).
 License: MIT + file LICENSE
 Encoding: UTF-8
-Language: es
 LazyData: true
 Imports: 
     mvnfast,
-    magrittr,
-    plyr,
-    purrr,
-    tibble,
-    abind,
     Rfast
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
