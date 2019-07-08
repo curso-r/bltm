@@ -1,6 +1,8 @@
 # vamos partir do objeto "result", que e uma lista com
 # 4 elementos, sendo cada elemento uma chain do modelo.
 
+library(tidyverse)
+result <- read_rds("~/Downloads/result.rds")
 # Esse objeto contem todas as chains empilhadas
 a <- do.call(rbind, result)
 
@@ -50,7 +52,7 @@ D <- c(as.Date("1986/1/1"),
        as.Date("2002/8/1"),
        as.Date("2010/12/1"))
 
-p <- purrr::map(1:3, ~{
+p <- purrr::map(1:17, ~{
   plot_betas(a, .x, real_values = NULL)+
     scale_x_continuous(breaks=0:3*100, labels = D)+
     geom_line(linetype=1)+
@@ -131,30 +133,54 @@ tibble(alpha = rh) %>%
   theme_bw(14)
 
 # predicao ---------------------------------------------------------------------
+load("~/Downloads/XXt.RData")
+load("~/Downloads/yyt.RData")
+load("~/Downloads/XXf.RData")
+load("~/Downloads/yyf.RData")
+x_train <- XXt
+x_test <- XXf
+y_train <- yyt
+y_test <- yyf
 
 # previsoes na base de treino (demora)
+
+# demora pouco, e da os mesmos resultados
+pred_post_train <- ltm_pred(tail(a, 1000), x_train)
+# se quiser fazer com a base completa, aqui
 pred_post_train <- ltm_pred(a, x_train)
+
 # previsoes na base de teste  (demora)
+# demora pouco, e da os mesmos resultados
+pred_post_test <- ltm_pred(tail(a, 1000), x_test)
+# se quiser fazer com a base completa, aqui
 pred_post_test <- ltm_pred(a, x_test)
 
-# estatisticas
-pred_mean_train <- apply(pred_post_train, 2:3, mean)
-pred_median_train <- apply(pred_post_train, 2:3, median)
-pred_sd_train <- apply(pred_post_train, 2:3, sd)
 
-pred_mean_test <- apply(pred_post_test, 2:3, mean)
-pred_median_test <- apply(pred_post_test, 2:3, median)
-pred_sd_test <- apply(pred_post_test, 2:3, sd)
+# estatisticas
+
+## NAO TEM MAIS COMO FAZER MEDIANA POIS ESTOU CALCULANDO A MEDIA DENTRO DA FUNCAO
+## O RESULTADO JA EH A MEDIA
+
+# pred_mean_train <- apply(pred_post_train, 2:3, mean)
+# pred_median_train <- apply(pred_post_train, 2:3, median)
+# pred_sd_train <- apply(pred_post_train, 2:3, sd)
+pred_mean_train <- pred_post_train
+
+# pred_mean_test <- apply(pred_post_test, 2:3, mean)
+# pred_median_test <- apply(pred_post_test, 2:3, median)
+# pred_sd_test <- apply(pred_post_test, 2:3, sd)
+pred_mean_test <- pred_post_test
 
 # RMSE
 (rmse_train_mean <- sqrt(mean((pred_mean_train - y_train)^2)))
-(rmse_test_mean <- sqrt(sum((pred_mean_test - y_test)^2)))
-(rmse_train_median <- sqrt(mean((pred_median_train - y_train)^2)))
-(rmse_test_median <- sqrt(sum((pred_median_test - y_test)^2)))
+(rmse_test_mean <- sqrt(mean((pred_mean_test - y_test)^2)))
 
 # R2
-(r2_train_mean <- 1 - sum((pred_mean_train - y_train)^2) / sum(y_train^2))
-(r2_test_mean <- 1 - sum((pred_mean_test - y_test)^2) / sum(y_test^2))
-(r2_train_median <- 1 - sum((pred_median_train - y_train)^2) / sum(y_train^2))
-(r2_test_median <- 1 - sum((pred_median_test - y_test)^2) / sum(y_test^2))
+(r2_train_mean <- 1 - sum((pred_mean_train - y_train)^2) / sum((y_train-rowMeans(y_train))^2))
+(r2_test_mean <- 1 - sum((pred_mean_test - y_test)^2) / sum((y_test-rowMeans(y_test))^2))
+
+# (rmse_train_median <- sqrt(mean((pred_median_train - y_train)^2)))
+# (rmse_test_median <- sqrt(sum((pred_median_test - y_test)^2)))
+# (r2_train_median <- 1 - sum((pred_median_train - y_train)^2) / sum(y_train^2))
+# (r2_test_median <- 1 - sum((pred_median_test - y_test)^2) / sum(y_test^2))
 

@@ -15,7 +15,7 @@ ltm_sim(ns, nk, ni, vmu, mPhi, mSigs, dsig, vd, alpha)
 
 \item{vmu}{vector mu}
 
-\item{mPhi}{phi matrix}
+\item{mPhi}{phi diagonal matrix with the parameters}
 
 \item{mSigs}{sigma eta vector}
 
@@ -26,8 +26,13 @@ ltm_sim(ns, nk, ni, vmu, mPhi, mSigs, dsig, vd, alpha)
 \item{alpha}{intercept}
 }
 \value{
-list containing the generated y, x, beta and thresholded beta
+List containing the generated y, x, beta and thresholded beta.
 }
 \description{
-Simulate LTM model
+Simulate LTM model using many
+}
+\references{
+Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+dynamic models." Journal of Business & Economic
+Statistics 31.2 (2013): 151-164.
 }

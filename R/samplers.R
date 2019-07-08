@@ -180,25 +180,38 @@ sample_beta_t <- function(t, beta_t, d_star, sig, xt, yt, b_lag, b_lead, mu, TT,
 fXtb <- function(beta, d, x) {
   mat <- matrix(d, ncol = ncol(beta), nrow = nrow(beta), byrow = TRUE)
   b_star <- beta * (abs(beta) >= mat)
-  t(apply(x, 1, function(z) rowSums(z * b_star)))
+  apply(x, 1, function(z) Rfast::rowsums(z * b_star))
 }
 
-sample_d <- function(mu, K, sig_eta, phi, d, x, y, beta, sig) {
+sample_d <- function(mu, K, sig_eta, phi, d, x, y, beta, sig, fast = FALSE) {
 
   nk <- ncol(phi)
   v <- sig_eta * solve(sqrt(diag(nk)-phi^2))
   lim_superior <- abs(mu) + K * diag(v)
   d_novo <- as.numeric(d)
+  ty <- t(y)
 
-  for(i in 1:nk) {
-    d_novo[i] <- stats::runif(1) * lim_superior[i]
+  if (fast) {
+    ## alternative: faster, but statistically wrong
     xb_velho <- fXtb(beta, d, x)
+    d_novo <- stats::runif(nk) * lim_superior
     xb_novo <- fXtb(beta, d_novo, x)
-
-    dln <- -0.5 * sum((y - xb_novo)^2) / sig^2
-    dlo <- -0.5 * sum((y - xb_velho)^2) / sig^2
-
+    dln <- -0.5 * sum((ty - xb_novo)^2) / sig^2
+    dlo <- -0.5 * sum((ty - xb_velho)^2) / sig^2
     if (stats::runif(1) < exp(dln-dlo)) d <- d_novo
+  } else {
+    xb_velho <- fXtb(beta, d, x)
+    for(i in 1:nk) {
+      d_novo[i] <- stats::runif(1) * lim_superior[i]
+      xb_novo <- fXtb(beta, d_novo, x)
+      dln <- -0.5 * sum((ty - xb_novo)^2) / sig^2
+      dlo <- -0.5 * sum((ty - xb_velho)^2) / sig^2
+      if (stats::runif(1) < exp(dln-dlo)) {
+        d <- d_novo
+        xb_velho <- fXtb(beta, d, x)
+      }
+    }
   }
+
   matrix(d, nrow = nk)
 }

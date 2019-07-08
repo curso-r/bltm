@@ -1,4 +1,12 @@
 
+<!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.org/curso-r/ltm.svg?branch=master)](https://travis-ci.org/curso-r/ltm)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/curso-r/ltm?branch=master&svg=true)](https://ci.appveyor.com/project/curso-r/ltm)
+<!-- badges: end -->
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # ltm
@@ -20,12 +28,12 @@ fits the model to one single series (\(I=1\)).
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-#> ✔ ggplot2 3.2.0     ✔ purrr   0.3.2
-#> ✔ tibble  2.1.3     ✔ dplyr   0.8.1
-#> ✔ tidyr   0.8.3     ✔ stringr 1.4.0
-#> ✔ readr   1.3.1     ✔ forcats 0.4.0
-#> ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Attaching packages ────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ✔ ggplot2 3.2.0          ✔ purrr   0.3.2     
+#> ✔ tibble  2.1.3          ✔ dplyr   0.8.1     
+#> ✔ tidyr   0.8.3.9000     ✔ stringr 1.4.0     
+#> ✔ readr   1.3.1          ✔ forcats 0.4.0
+#> ── Conflicts ───────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 devtools::load_all()
@@ -125,17 +133,60 @@ bayesplot::mcmc_trace(result, regex_pars = "mu\\[[12]") +
   theme_bw()
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-trace-1.png" width="100%" />
 
 ### Estimated Betas
 
 ``` r
+# check this function inside demo/ folder
 plot_betas(result, 1:3, real_values = d_sim) +
   facet_wrap(~factor(p), ncol = 2) +
   theme_bw()
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+## Model details
+
+### Sampling from \(\alpha_i^{*}\)
+
+\[\bar y_i = \frac 1 T \sum_{t=1} y_{it}\]
+
+\[\mu^{*}_{\alpha} = \frac{a^*T + \mu_{\alpha}^0 s_{\alpha}^0}{T + s_{\alpha}^0},\]
+
+where
+
+\[a^*_i=\frac{1}{K}\sum_{t=1}^{T}\sum_{k=1}^{K}x_{itk}\beta_{tk}\]
+
+Generate using
+
+\[\boldsymbol\alpha^{*} \sim\mathcal N(\mu_{\alpha}^{*}, \sigma^{*2}),\]
+
+where \(\sigma^{*2}\) is the posterior sample of \(\sigma\)
+
+### Sampling from \(\boldsymbol\beta\)
+
+The difference between the paper and the code is that it checks if some
+of the \(\boldsymbol\beta\) should be replaced by zero. Actually, it is
+not a difference; the appendix is just a little obscure in this passage.
+
+First, we calculate \(M_t\) and \(m_t\) (depending on \(t\)), then we
+generate candidates for \(\beta_t\) and their log-densities using the
+normal distribution.
+
+We then recalculate \(M_t\) and \(m_t\), replacing some of \(x_t\)’s
+entries by zero, depending on a condition based on the threshold and the
+values of \(\boldsymbol\beta\). Finally, we obtain the log-density of
+the previously calculated \(m_t\) using these new parameters. This is
+the MH step where we draw a candidate from a (auxiliary) posterior
+distribution of non-threshold model. When we decide to accept the
+candidate, we compute the posterior distribution of the auxiliary
+posterior distribution and the true posterior distribution (of the
+threshold model). For the latter, we need to replace some of \(x_t\)’s
+entries by zero depending on a condition based on the threshold and the
+betas.
+
+It’s important to note that if there aren’t any \(\beta\) to replace by
+zero, then we should accept the new \(\boldsymbol\beta\) with
+probability one, because the posterior has an analytic formula.
 
 ## LICENSE
 
