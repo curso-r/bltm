@@ -8,3 +8,13 @@
 0 errors | 0 warnings | 0 notes
 
 * This is a new release.
+
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Changed the version to 0.1.
+
+* Added examples.
+
+* Added docs/ directory to .Rbuildignore file.

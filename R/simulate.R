@@ -19,6 +19,22 @@
 #' dynamic models." Journal of Business & Economic
 #' Statistics 31.2 (2013): 151-164.
 #'
+#' @examples
+#'
+#' # Generates 10 series, each one with 500 observations and 2 regressors.
+#'
+#' d_sim <- ltm_sim(
+#'   ns = 500, nk = 2, ni = 10,
+#'   vmu = matrix(c(.5,.5), nrow = 2),
+#'   mPhi = diag(2) * c(.99, .99),
+#'   mSigs = c(.1,.1),
+#'   dsig = .15,
+#'   vd = matrix(c(.4,.4), nrow = 2),
+#'   alpha = 0
+#' )
+#'
+#' str(d_sim)
+#'
 #' @export
 ltm_sim <- function(ns, nk, ni, vmu, mPhi, mSigs, dsig, vd, alpha) {
   # variavel preditora

@@ -31,6 +31,23 @@ List containing the generated y, x, beta and thresholded beta.
 \description{
 Simulate LTM model using many
 }
+\examples{
+
+# Generates 10 series, each one with 500 observations and 2 regressors.
+
+d_sim <- ltm_sim(
+  ns = 500, nk = 2, ni = 10,
+  vmu = matrix(c(.5,.5), nrow = 2),
+  mPhi = diag(2) * c(.99, .99),
+  mSigs = c(.1,.1),
+  dsig = .15,
+  vd = matrix(c(.4,.4), nrow = 2),
+  alpha = 0
+)
+
+str(d_sim)
+
+}
 \references{
 Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
 dynamic models." Journal of Business & Economic

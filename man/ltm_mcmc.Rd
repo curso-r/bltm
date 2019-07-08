@@ -24,3 +24,22 @@ See \code{\link[=create_prior_parameters]{create_prior_parameters()}}.}
 \description{
 Given \code{x} and \code{y} performs the MCMC optimization.
 }
+\examples{
+
+# Generates 10 series, each one with 500 observations and 2 regressors.
+
+d_sim <- ltm_sim(
+  ns = 500, nk = 2, ni = 10,
+  vmu = matrix(c(.5,.5), nrow = 2),
+  mPhi = diag(2) * c(.99, .99),
+  mSigs = c(.1,.1),
+  dsig = .15,
+  vd = matrix(c(.4,.4), nrow = 2),
+  alpha = 0
+)
+
+# Fit model
+
+fit_model <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 10, iter = 10)
+
+}

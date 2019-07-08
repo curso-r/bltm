@@ -5,6 +5,7 @@ output: github_document
 <!-- badges: start -->
   [![Travis build status](https://travis-ci.org/curso-r/ltm.svg?branch=master)](https://travis-ci.org/curso-r/ltm)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/curso-r/ltm?branch=master&svg=true)](https://ci.appveyor.com/project/curso-r/ltm)
+[![CRAN status](https://www.r-pkg.org/badges/version/ltm)](https://cran.r-project.org/package=ltm)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
