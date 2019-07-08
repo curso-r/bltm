@@ -91,12 +91,12 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create
   mu <- matrix(0, nrow = nk)
   alpha <- matrix(0, nrow = ni)
 
-  saida <- purrr::map2(
+  saida <- mapply(
+    to_matrix,
     list(alpha, dsig, mPhi, mu, vd, mSigs, betas),
-    c("alpha", "sig", "phi", "mu", "d", "sig_eta", "beta"),
-    to_matrix
+    c("alpha", "sig", "phi", "mu", "d", "sig_eta", "beta")
   )
-  nm <- unlist(purrr::map(saida, names))
+  nm <- unlist(lapply(saida, names))
   post <- do.call(cbind, saida)
 
   # priors -----
@@ -153,10 +153,10 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create
 
     # store values
     if (j > 0) {
-      saida <- purrr::map2(
+      saida <- mapply(
+        to_matrix,
         list(alpha, dsig, mPhi, mu, vd, mSigs, betas),
-        c("alpha", "sig", "phi", "mu", "d", "sig_eta", "beta"),
-        to_matrix
+        c("alpha", "sig", "phi", "mu", "d", "sig_eta", "beta")
       )
       m_new <- do.call(cbind, saida)
       post <- rbind(post, m_new)
@@ -167,7 +167,9 @@ ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create
     #   message(sprintf(m, mu[1,1], mPhi[1,1], vd[1,1], mSigs[1], dsig))
     # }
   }
-  magrittr::set_colnames(post[-1,], nm)
+  post <- post[-1,]
+  colnames(post) <- nm
+  post
 }
 
 
