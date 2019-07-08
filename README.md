@@ -2,16 +2,18 @@
 <!-- badges: start -->
 
 [![Travis build
-status](https://travis-ci.org/curso-r/ltm.svg?branch=master)](https://travis-ci.org/curso-r/ltm)
+status](https://travis-ci.org/curso-r/bltm.svg?branch=master)](https://travis-ci.org/curso-r/bltm)
 [![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/curso-r/ltm?branch=master&svg=true)](https://ci.appveyor.com/project/curso-r/ltm)
+status](https://ci.appveyor.com/api/projects/status/github/curso-r/bltm?branch=master&svg=true)](https://ci.appveyor.com/project/curso-r/bltm)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/bltm)](https://cran.r-project.org/package=bltm)
 <!-- badges: end -->
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ltm
+# bltm
 
-The goal of ltm is to fit Bayesian Latent Threshold Models using R. The
+The goal of bltm is to fit Bayesian Latent Threshold Models using R. The
 model in the AR(1) form is defined by these equations:
 
 \[\begin{aligned}
@@ -28,16 +30,16 @@ fits the model to one single series (\(I=1\)).
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ ggplot2 3.2.0          ✔ purrr   0.3.2     
 #> ✔ tibble  2.1.3          ✔ dplyr   0.8.1     
 #> ✔ tidyr   0.8.3.9000     ✔ stringr 1.4.0     
 #> ✔ readr   1.3.1          ✔ forcats 0.4.0
-#> ── Conflicts ───────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 devtools::load_all()
-#> Loading ltm
+#> Loading bltm
 ```
 
 ## Simulated Example
