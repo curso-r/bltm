@@ -86,7 +86,7 @@ create_prior_parameters <- function(a_mu0 = 0, a_s0 = .1,
 #'
 #' # Fit model
 #'
-#' fit_model <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 10, iter = 10)
+#' fit_model <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 0, iter = 2)
 #'
 #' @export
 ltm_mcmc <- function(x, y, burnin = 2000, iter = 8000, K = 3, prior_par = create_prior_parameters()) {

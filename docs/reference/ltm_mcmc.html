@@ -157,17 +157,8 @@ See <code>create_prior_parameters()</code>.</p></td>
 
 <span class='co'># Fit model</span>
 
-<span class='no'>fit_model</span> <span class='kw'>&lt;-</span> <span class='fu'>ltm_mcmc</span>(<span class='no'>d_sim</span>$<span class='no'>mx</span>, <span class='no'>d_sim</span>$<span class='no'>vy</span>, <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>iter</span> <span class='kw'>=</span> <span class='fl'>10</span>)</div><div class='output co'>#&gt; Iteration:     1 /    20 [  5%]  (Warmup)
-#&gt; Iteration:     2 /    20 [ 10%]  (Warmup)
-#&gt; Iteration:     4 /    20 [ 20%]  (Warmup)
-#&gt; Iteration:     6 /    20 [ 30%]  (Warmup)
-#&gt; Iteration:     8 /    20 [ 40%]  (Warmup)
-#&gt; Iteration:    10 /    20 [ 50%]  (Sampling)
-#&gt; Iteration:    12 /    20 [ 60%]  (Sampling)
-#&gt; Iteration:    14 /    20 [ 70%]  (Sampling)
-#&gt; Iteration:    16 /    20 [ 80%]  (Sampling)
-#&gt; Iteration:    18 /    20 [ 90%]  (Sampling)
-#&gt; Iteration:    20 /    20 [ 100%]  (Sampling)</div><div class='input'>
+<span class='no'>fit_model</span> <span class='kw'>&lt;-</span> <span class='fu'>ltm_mcmc</span>(<span class='no'>d_sim</span>$<span class='no'>mx</span>, <span class='no'>d_sim</span>$<span class='no'>vy</span>, <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>iter</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; Iteration:     1 /     2 [ 50%]  (Sampling)
+#&gt; Iteration:     2 /     2 [ 100%]  (Sampling)</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

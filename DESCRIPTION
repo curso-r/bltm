@@ -5,12 +5,15 @@ Authors@R: c(
     person("Julio", "Trecenti", email = "julio.trecenti@gmail.com", role = "cre"),
     person("Fernando", "Tassinari", email = "fernandotm@al.insper.edu.br", role = "aut"),
     person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = "ctb"))
-Description: Fits Latent Threshold Modeling (LTM) model for simulated data
-    and describes how to adjust model using real data. This package is based
-    on the paper Nakajima and West (2016).
+Description: Fits Latent Threshold Model for simulated data
+    and describes how to adjust model using real data. This package has a
+    function to generate data, a function to configure priors and a function to 
+    fit the model. Examples may be checked inside the demonstration files.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/curso-r/bltm
+BugReports: https://github.com/curso-r/bltm/issues
 Imports: 
     mvnfast,
     Rfast

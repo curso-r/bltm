@@ -40,6 +40,6 @@ d_sim <- ltm_sim(
 
 # Fit model
 
-fit_model <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 10, iter = 10)
+fit_model <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 0, iter = 2)
 
 }
