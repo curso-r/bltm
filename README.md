@@ -141,10 +141,13 @@ bayesplot::mcmc_trace(result, regex_pars = "mu\\[[12]") +
 
 ``` r
 # check this function inside demo/ folder
+source("demo/plot_betas.R")
 plot_betas(result, 1:3, real_values = d_sim) +
   facet_wrap(~factor(p), ncol = 2) +
   theme_bw()
 ```
+
+<img src="man/figures/README-betas-1.png" width="100%" />
 
 ## Model details
 
