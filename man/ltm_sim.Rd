@@ -32,7 +32,6 @@ List containing the generated y, x, beta and thresholded beta.
 Simulate LTM model using many
 }
 \examples{
-
 # Generates 10 series, each one with 500 observations and 2 regressors.
 
 d_sim <- ltm_sim(

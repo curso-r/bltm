@@ -25,7 +25,6 @@ See \code{\link[=create_prior_parameters]{create_prior_parameters()}}.}
 Given \code{x} and \code{y} performs the MCMC optimization.
 }
 \examples{
-
 # Generates 10 series, each one with 500 observations and 2 regressors.
 
 d_sim <- ltm_sim(
@@ -42,4 +41,9 @@ d_sim <- ltm_sim(
 
 fit_model <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 0, iter = 2)
 
+}
+\references{
+Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+dynamic models." Journal of Business & Economic
+Statistics 31.2 (2013): 151-164.
 }

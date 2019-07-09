@@ -70,8 +70,12 @@ create_prior_parameters <- function(a_mu0 = 0, a_s0 = .1,
 #' @param prior_par List of parameters for prior distrributions.
 #'    See [create_prior_parameters()].
 #'
-#' @examples
+#' @references
+#' Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+#' dynamic models." Journal of Business & Economic
+#' Statistics 31.2 (2013): 151-164.
 #'
+#' @examples
 #' # Generates 10 series, each one with 500 observations and 2 regressors.
 #'
 #' d_sim <- ltm_sim(

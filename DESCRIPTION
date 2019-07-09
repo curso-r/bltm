@@ -1,6 +1,6 @@
 Package: bltm
 Title: Bayesian Latent Threshold Modeling
-Version: 0.1
+Version: 0.1.0.9000
 Authors@R: c(
     person("Julio", "Trecenti", email = "julio.trecenti@gmail.com", role = "cre"),
     person("Fernando", "Tassinari", email = "fernandotm@al.insper.edu.br", role = "aut"),

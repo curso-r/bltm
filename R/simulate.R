@@ -20,7 +20,6 @@
 #' Statistics 31.2 (2013): 151-164.
 #'
 #' @examples
-#'
 #' # Generates 10 series, each one with 500 observations and 2 regressors.
 #'
 #' d_sim <- ltm_sim(
