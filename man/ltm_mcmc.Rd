@@ -21,6 +21,12 @@ ltm_mcmc(x, y, burnin = 2000, iter = 8000, K = 3,
 \item{prior_par}{List of parameters for prior distrributions.
 See \code{\link[=create_prior_parameters]{create_prior_parameters()}}.}
 }
+\value{
+matrix containing the posterior samples. Each line is one
+sample after the burnin period and each column is one of the
+parameters of the model. Columns are named to find the parameters
+with ease.
+}
 \description{
 Given \code{x} and \code{y} performs the MCMC optimization.
 }

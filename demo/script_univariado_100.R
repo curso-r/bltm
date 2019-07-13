@@ -32,7 +32,6 @@ ajustar <- function(i) {
   d_sim <- with(simulacoes, sim[[i]])
   res <- ltm_mcmc(d_sim$mx, d_sim$vy, burnin = 1000, iter = 5000, K = 3)
   l <- tibble(id = i, data = list(d_sim), result = list(res))
-  write_rds(l, sprintf("data-raw/results_univariate/id_%02d.rds", i))
 }
 
 abjutils::pvec(seq_len(n_repeticoes), ajustar)

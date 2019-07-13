@@ -24,15 +24,24 @@ to_matrix <- function(parm, type) {
 #' * (phi+1)/2 ~ Beta(a0, b0)
 #'
 #' @param a_mu0 mean of alpha normal distribution.
-#' @param a_s0 standard deviation of alpha's normal distribution
-#' @param n0 sig2 inverse gamma shape parameter
-#' @param S0 sig2 inverse gamma location parameter
-#' @param v0 sig_eta inverse gamma shape parameter
-#' @param V0 sig_eta inverse gamma location parameter
-#' @param m0 mu normal's mean parameter
-#' @param s0 mu normals standard deviation
-#' @param a0 a0 beta's shape parameter
-#' @param b0 a0 beta's location parameter
+#' @param a_s0 standard deviation of alpha's normal distribution.
+#' @param n0 sig2 inverse gamma shape parameter.
+#' @param S0 sig2 inverse gamma location parameter.
+#' @param v0 sig_eta inverse gamma shape parameter.
+#' @param V0 sig_eta inverse gamma location parameter.
+#' @param m0 mu normal's mean parameter.
+#' @param s0 mu normals standard deviation.
+#' @param a0 a0 beta's shape parameter.
+#' @param b0 a0 beta's location parameter.
+#'
+#' @return List containing the hyperparameters used to fit the model.
+#'   The default parameters are the same of the simulation example of
+#'   the paper.
+#'
+#' @references
+#' Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+#' dynamic models." Journal of Business & Economic
+#' Statistics 31.2 (2013): 151-164.
 #'
 #' @export
 create_prior_parameters <- function(a_mu0 = 0, a_s0 = .1,
@@ -74,6 +83,11 @@ create_prior_parameters <- function(a_mu0 = 0, a_s0 = .1,
 #' Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
 #' dynamic models." Journal of Business & Economic
 #' Statistics 31.2 (2013): 151-164.
+#'
+#' @return matrix containing the posterior samples. Each line is one
+#'   sample after the burnin period and each column is one of the
+#'   parameters of the model. Columns are named to find the parameters
+#'   with ease.
 #'
 #' @examples
 #' # Generates 10 series, each one with 500 observations and 2 regressors.

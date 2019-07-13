@@ -10,23 +10,28 @@ create_prior_parameters(a_mu0 = 0, a_s0 = 0.1, n0 = 6, S0 = 0.06,
 \arguments{
 \item{a_mu0}{mean of alpha normal distribution.}
 
-\item{a_s0}{standard deviation of alpha's normal distribution}
+\item{a_s0}{standard deviation of alpha's normal distribution.}
 
-\item{n0}{sig2 inverse gamma shape parameter}
+\item{n0}{sig2 inverse gamma shape parameter.}
 
-\item{S0}{sig2 inverse gamma location parameter}
+\item{S0}{sig2 inverse gamma location parameter.}
 
-\item{v0}{sig_eta inverse gamma shape parameter}
+\item{v0}{sig_eta inverse gamma shape parameter.}
 
-\item{V0}{sig_eta inverse gamma location parameter}
+\item{V0}{sig_eta inverse gamma location parameter.}
 
-\item{m0}{mu normal's mean parameter}
+\item{m0}{mu normal's mean parameter.}
 
-\item{s0}{mu normals standard deviation}
+\item{s0}{mu normals standard deviation.}
 
-\item{a0}{a0 beta's shape parameter}
+\item{a0}{a0 beta's shape parameter.}
 
-\item{b0}{a0 beta's location parameter}
+\item{b0}{a0 beta's location parameter.}
+}
+\value{
+List containing the hyperparameters used to fit the model.
+The default parameters are the same of the simulation example of
+the paper.
 }
 \description{
 Define the priors parameters to be used with \code{\link[=ltm_mcmc]{ltm_mcmc()}}.
@@ -40,4 +45,9 @@ Considering the following priors:
 \item mu ~ N(m0, s0^2)
 \item (phi+1)/2 ~ Beta(a0, b0)
 }
+}
+\references{
+Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+dynamic models." Journal of Business & Economic
+Statistics 31.2 (2013): 151-164.
 }

@@ -5,10 +5,12 @@ Authors@R: c(
     person("Julio", "Trecenti", email = "julio.trecenti@gmail.com", role = "cre"),
     person("Fernando", "Tassinari", email = "fernandotm@al.insper.edu.br", role = "aut"),
     person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = "ctb"))
-Description: Fits Latent Threshold Model for simulated data
-    and describes how to adjust model using real data. This package has a
-    function to generate data, a function to configure priors and a function to 
-    fit the model. Examples may be checked inside the demonstration files.
+Description: Fits latent threshold model for simulated data
+    and describes how to adjust model using real data. Implements algorithm
+    proposed by Nakajima and West (2013) <doi:10.1080/07350015.2012.747847>. 
+    This package has a function to generate data, a function to configure 
+    priors and a function to fit the model. Examples may be checked inside 
+    the demonstration files.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
