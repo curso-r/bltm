@@ -2,9 +2,9 @@
 
 This is a resubmission. In this version I have:
 
-* changed the example to take less than 5 seconds.
-* changed LICENSE to usethis package default
+* added value rd tag to all functions
 * updated DESCRIPTION
+* improved documentation
 
 ## Test environments
 

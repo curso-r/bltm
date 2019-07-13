@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bltm</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -83,7 +83,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/curso-r/bltm">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -97,7 +102,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>MCMC LTM</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/curso-r/bltm/blob/master/R/mcmc.R'><code>R/mcmc.R</code></a></small>
     <div class="hidden name"><code>ltm_mcmc.Rd</code></div>
     </div>
 
@@ -108,7 +113,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>ltm_mcmc</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>burnin</span> <span class='kw'>=</span> <span class='fl'>2000</span>, <span class='kw'>iter</span> <span class='kw'>=</span> <span class='fl'>8000</span>, <span class='kw'>K</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>prior_par</span> <span class='kw'>=</span> <span class='fu'>create_prior_parameters</span>())</pre>
+  <span class='kw'>prior_par</span> <span class='kw'>=</span> <span class='fu'><a href='create_prior_parameters.html'>create_prior_parameters</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -136,16 +141,28 @@
     <tr>
       <th>prior_par</th>
       <td><p>List of parameters for prior distrributions.
-See <code>create_prior_parameters()</code>.</p></td>
+See <code><a href='create_prior_parameters.html'>create_prior_parameters()</a></code>.</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>matrix containing the posterior samples. Each line is one
+sample after the burnin period and each column is one of the
+parameters of the model. Columns are named to find the parameters
+with ease.</p>
+    
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+dynamic models." Journal of Business &amp; Economic
+Statistics 31.2 (2013): 151-164.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># Generates 10 series, each one with 500 observations and 2 regressors.</span>
+    <pre class="examples"><div class='input'><span class='co'># Generates 10 series, each one with 500 observations and 2 regressors.</span>
 
-<span class='no'>d_sim</span> <span class='kw'>&lt;-</span> <span class='fu'>ltm_sim</span>(
+<span class='no'>d_sim</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ltm_sim.html'>ltm_sim</a></span>(
   <span class='kw'>ns</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>nk</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>ni</span> <span class='kw'>=</span> <span class='fl'>10</span>,
   <span class='kw'>vmu</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>.5</span>,<span class='fl'>.5</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>2</span>),
   <span class='kw'>mPhi</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span>(<span class='fl'>2</span>) * <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>.99</span>, <span class='fl'>.99</span>),
@@ -165,7 +182,11 @@ See <code>create_prior_parameters()</code>.</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#references">References</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

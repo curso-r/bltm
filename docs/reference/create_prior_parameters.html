@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bltm</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -83,7 +83,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/curso-r/bltm">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -97,13 +102,13 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create the prior parameters.</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/curso-r/bltm/blob/master/R/mcmc.R'><code>R/mcmc.R</code></a></small>
     <div class="hidden name"><code>create_prior_parameters.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Define the priors parameters to be used with <code>ltm_mcmc()</code>.</p>
+    <p>Define the priors parameters to be used with <code><a href='ltm_mcmc.html'>ltm_mcmc()</a></code>.</p>
     
     </div>
 
@@ -119,41 +124,47 @@
     </tr>
     <tr>
       <th>a_s0</th>
-      <td><p>standard deviation of alpha's normal distribution</p></td>
+      <td><p>standard deviation of alpha's normal distribution.</p></td>
     </tr>
     <tr>
       <th>n0</th>
-      <td><p>sig2 inverse gamma shape parameter</p></td>
+      <td><p>sig2 inverse gamma shape parameter.</p></td>
     </tr>
     <tr>
       <th>S0</th>
-      <td><p>sig2 inverse gamma location parameter</p></td>
+      <td><p>sig2 inverse gamma location parameter.</p></td>
     </tr>
     <tr>
       <th>v0</th>
-      <td><p>sig_eta inverse gamma shape parameter</p></td>
+      <td><p>sig_eta inverse gamma shape parameter.</p></td>
     </tr>
     <tr>
       <th>V0</th>
-      <td><p>sig_eta inverse gamma location parameter</p></td>
+      <td><p>sig_eta inverse gamma location parameter.</p></td>
     </tr>
     <tr>
       <th>m0</th>
-      <td><p>mu normal's mean parameter</p></td>
+      <td><p>mu normal's mean parameter.</p></td>
     </tr>
     <tr>
       <th>s0</th>
-      <td><p>mu normals standard deviation</p></td>
+      <td><p>mu normals standard deviation.</p></td>
     </tr>
     <tr>
       <th>a0</th>
-      <td><p>a0 beta's shape parameter</p></td>
+      <td><p>a0 beta's shape parameter.</p></td>
     </tr>
     <tr>
       <th>b0</th>
-      <td><p>a0 beta's location parameter</p></td>
+      <td><p>a0 beta's location parameter.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>List containing the hyperparameters used to fit the model.
+The default parameters are the same of the simulation example of
+the paper.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -165,6 +176,12 @@
 <li><p>(phi+1)/2 ~ Beta(a0, b0)</p></li>
 </ul>
     
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Nakajima, Jouchi, and Mike West. "Bayesian analysis of latent threshold
+dynamic models." Journal of Business &amp; Economic
+Statistics 31.2 (2013): 151-164.</p>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -172,7 +189,11 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#references">References</a></li>
           </ul>
 
   </div>

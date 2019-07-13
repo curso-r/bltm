@@ -11,9 +11,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Bayesian Latent Threshold Modeling">
-<meta property="og:description" content="Fits Latent Threshold Modeling (LTM) model for simulated data
-    and describes how to adjust model using real data. This package is based
-    on the paper Nakajima and West (2016).">
+<meta property="og:description" content="Fits latent threshold model for simulated data
+    and describes how to adjust model using real data. Implements algorithm
+    proposed by Nakajima and West (2013) &lt;doi:10.1080/07350015.2012.747847&gt;. 
+    This package has a function to generate data, a function to configure 
+    priors and a function to fit the model. Examples may be checked inside 
+    the demonstration files.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -33,7 +36,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">bltm</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -49,7 +52,14 @@
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/curso-r/bltm">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -81,12 +91,12 @@ b_{ijt} &amp;= \beta_{ijt} \,\mathbb I(|\beta_{ijt}| \geq d_{ij}) \\
 <h2 class="hasAnchor">
 <a href="#load-packages" class="anchor"></a>Load packages</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#&gt; ── Attaching packages ────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; ✔ ggplot2 3.2.0          ✔ purrr   0.3.2     </span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">#&gt; ✔ tibble  2.1.3          ✔ dplyr   0.8.1     </span></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">#&gt; ✔ tidyr   0.8.3.9000     ✔ stringr 1.4.0     </span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#&gt; ✔ readr   1.3.1          ✔ forcats 0.4.0</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; ── Conflicts ───────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
 <a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
 <a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a>
 <a class="sourceLine" id="cb1-10" data-line-number="10">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/load_all.html">load_all</a></span>()</a>
@@ -97,7 +107,7 @@ b_{ijt} &amp;= \beta_{ijt} \,\mathbb I(|\beta_{ijt}| \geq d_{ij}) \\
 <a href="#simulated-example" class="anchor"></a>Simulated Example</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">103</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">d_sim &lt;-<span class="st"> </span><span class="kw">ltm_sim</span>(</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">d_sim &lt;-<span class="st"> </span><span class="kw"><a href="reference/ltm_sim.html">ltm_sim</a></span>(</a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">ni =</span> <span class="dv">5</span>, <span class="dt">ns =</span> <span class="dv">500</span>, <span class="dt">nk =</span> <span class="dv">2</span>, </a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">alpha =</span> <span class="dv">0</span>,</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">vmu =</span> <span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(.<span class="dv">5</span>,.<span class="dv">5</span>), <span class="dt">nrow =</span> <span class="dv">2</span>), </a>
@@ -111,7 +121,7 @@ b_{ijt} &amp;= \beta_{ijt} \,\mathbb I(|\beta_{ijt}| \geq d_{ij}) \\
 <a class="sourceLine" id="cb2-14" data-line-number="14">binder &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="dv">500</span>)<span class="op">-</span>.<span class="dv">5</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">5</span>, <span class="dv">500</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb2-15" data-line-number="15">d_sim<span class="op">$</span>mx &lt;-<span class="st"> </span>abind<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/abind/man/abind.html">abind</a></span>(d_sim<span class="op">$</span>mx, binder, <span class="dt">along =</span> <span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">d_sim<span class="op">$</span>mb &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(d_sim<span class="op">$</span>mb, <span class="dv">0</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw">ltm_mcmc</span>(d_sim<span class="op">$</span>mx, d_sim<span class="op">$</span>vy, <span class="dt">burnin =</span> <span class="dv">100</span>, <span class="dt">iter =</span> <span class="dv">500</span>)</a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw"><a href="reference/ltm_mcmc.html">ltm_mcmc</a></span>(d_sim<span class="op">$</span>mx, d_sim<span class="op">$</span>vy, <span class="dt">burnin =</span> <span class="dv">100</span>, <span class="dt">iter =</span> <span class="dv">500</span>)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co"># readr::write_rds(result, "data-raw/result.rds", compress = "xz")</span></a></code></pre></div>
 <pre><code>Iteration:     1 /   600 [  0%]  (Warmup)
 Iteration:    60 /   600 [ 10%]  (Warmup)
@@ -324,7 +334,7 @@ Iteration:   600 /   600 [ 100%]  (Sampling)</code></pre>
 </h3>
 <p>The difference between the paper and the code is that it checks if some of the <span class="math inline">\(\boldsymbol\beta\)</span> should be replaced by zero. Actually, it is not a difference; the appendix is just a little obscure in this passage.</p>
 <p>First, we calculate <span class="math inline">\(M_t\)</span> and <span class="math inline">\(m_t\)</span> (depending on <span class="math inline">\(t\)</span>), then we generate candidates for <span class="math inline">\(\beta_t\)</span> and their log-densities using the normal distribution.</p>
-<p>We then recalculate <span class="math inline">\(M_t\)</span> and <span class="math inline">\(m_t\)</span>, replacing some of <span class="math inline">\(x_t\)</span>’s entries by zero, depending on a condition based on the threshold and the values of <span class="math inline">\(\boldsymbol\beta\)</span>. Finally, we obtain the log-density of the previously calculated <span class="math inline">\(m_t\)</span> using these new parameters. This is the MH step where we draw a candidate from a (auxiliary) posterior distribution of non-threshold model. When we decide to accept the candidate, we compute the posterior distribution of the auxiliary posterior distribution and the true posterior distribution (of the threshold model). For the latter, we need to replace some of <span class="math inline">\(x_t\)</span>’s entries by zero depending on a condition based on the threshold and the betas.</p>
+<p>We then recalculate <span class="math inline">\(M_t\)</span> and <span class="math inline">\(m_t\)</span>, replacing some of <span class="math inline">\(x_t\)</span>s entries by zero, depending on a condition based on the threshold and the values of <span class="math inline">\(\boldsymbol\beta\)</span>. Finally, we obtain the log-density of the previously calculated <span class="math inline">\(m_t\)</span> using these new parameters. This is the MH step where we draw a candidate from a (auxiliary) posterior distribution of non-threshold model. When we decide to accept the candidate, we compute the posterior distribution of the auxiliary posterior distribution and the true posterior distribution (of the threshold model). For the latter, we need to replace some of <span class="math inline">\(x_t\)</span>’s entries by zero depending on a condition based on the threshold and the betas.</p>
 <p>It’s important to note that if there aren’t any <span class="math inline">\(\beta\)</span> to replace by zero, then we should accept the new <span class="math inline">\(\boldsymbol\beta\)</span> with probability one, because the posterior has an analytic formula.</p>
 </div>
 </div>
@@ -337,12 +347,20 @@ Iteration:   600 /   600 [ 100%]  (Sampling)</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div class="license">
+    <div class="links">
+<h2>Links</h2>
+<ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/curso-r/bltm">https://​github.com/​curso-r/​bltm</a>
+</li>
+<li>Report a bug at <br><a href="https://github.com/curso-r/bltm/issues">https://​github.com/​curso-r/​bltm/​issues</a>
+</li>
+</ul>
+</div>
+<div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 <div class="developers">
