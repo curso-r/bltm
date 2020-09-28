@@ -4,8 +4,18 @@
 \alias{create_prior_parameters}
 \title{Create the prior parameters.}
 \usage{
-create_prior_parameters(a_mu0 = 0, a_s0 = 0.1, n0 = 6, S0 = 0.06,
-  v0 = 6, V0 = 0.06, m0 = 0, s0 = 1, a0 = 20, b0 = 1.5)
+create_prior_parameters(
+  a_mu0 = 0,
+  a_s0 = 0.1,
+  n0 = 6,
+  S0 = 0.06,
+  v0 = 6,
+  V0 = 0.06,
+  m0 = 0,
+  s0 = 1,
+  a0 = 20,
+  b0 = 1.5
+)
 }
 \arguments{
 \item{a_mu0}{mean of alpha normal distribution.}

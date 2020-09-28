@@ -4,8 +4,14 @@
 \alias{ltm_mcmc}
 \title{MCMC LTM}
 \usage{
-ltm_mcmc(x, y, burnin = 2000, iter = 8000, K = 3,
-  prior_par = create_prior_parameters())
+ltm_mcmc(
+  x,
+  y,
+  burnin = 2000,
+  iter = 8000,
+  K = 3,
+  prior_par = create_prior_parameters()
+)
 }
 \arguments{
 \item{x}{data points}
