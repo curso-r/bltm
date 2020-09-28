@@ -34,7 +34,7 @@ sample_phi <- function(beta, mu, TT, sig_eta, d, alpha_0, beta_0, phi, K) {
   phi_try <- stats::rnorm(1, phi_hat, sqrt(sig_phi2))
   phi_star <- phi
   # a regra de parada exclui phi's não estacionários
-  while(ntry < 1000 && (phi_try <= 0 || abs(phi_try) >= 1-1e-4 || (d > abs(mu)+K*sig_eta/sqrt(1-phi_try^2)))) {
+  while(ntry < 1000 && (phi_try <= 0 || abs(phi_try) >= 1-1e-4 || (d > abs(mu)+K*sig_eta/sqrt(1-phi_try^2)) || phi_try >= 1)) {
     phi_try <- stats::rnorm(1, phi_hat, sqrt(sig_phi2))
     ntry <- ntry + 1
   }
